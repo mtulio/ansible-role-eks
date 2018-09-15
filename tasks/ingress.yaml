@@ -1,0 +1,6 @@
+---
+# setup ingress ALB
+aws iam put-role-policy --role-name <EC2_NODE_INSTANCE_ROLE> --policy-name alb-ingress-extra --policy-document file://iam-policy.json
+
+$ kubectl apply -f albrbac.yaml
+$ kubectl apply -f alb-ingress-controller.yaml
