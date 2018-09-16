@@ -1,6 +1,8 @@
 ---
-# setup ingress ALB
-aws iam put-role-policy --role-name <EC2_NODE_INSTANCE_ROLE> --policy-name alb-ingress-extra --policy-document file://iam-policy.json
+- set_fact:
+    wk_dir: "{{ eks_client_kubeconfig_workdir }}"
 
-$ kubectl apply -f albrbac.yaml
-$ kubectl apply -f alb-ingress-controller.yaml
+- include: "ingress/{{ item_ingress }}.yml"
+  with_items: "{{ eks_ingresses_enabled }}"
+  loop_control:
+    loop_var: item_ingress
