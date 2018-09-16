@@ -1,9 +1,9 @@
 ---
-# - name: VPC
 # - name: SG
 # - name: IAM
 
-# - include: cluster-manual.yaml
+# manual installation
+# - include: cluster.yaml
 
 - name: Create EKS cluster
   local_aws_eks_cluster:
