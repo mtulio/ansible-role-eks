@@ -27,10 +27,19 @@ eks_vpc_subnets:
     cidr: 10.200.4.0/20
     az: us-east-1b
 
+eks_vpc_subnets_id:
+  - subnet-067fad22155553875
+  - subnet-082942b18cb51a0ca
+
 ##> VPC SG
 eks_vpc_sg_setup: true
 eks_vpc_sg_name: "{{ eks_prefix }}{{ eks_cluster_name }}-sg-control-plane"
 eks_vpc_sg_id: ""
+
+eks_vpc_sgs_id_master:
+  - sg-0a9de5ecacd955dbd
+eks_vpc_sgs_id_worker:
+  - sg-2a49362bdf63910ab
 
 ##> IAM Role
 eks_iam_role_setup: true
@@ -40,18 +49,11 @@ eks_iam_instance_profile_arn: ""
 
 ##> Worker
 eks_worker_scaling_groups:
-  - name: "{{ eks_prefix }}{{ eks_cluster_name }}-workers-ondemand"
+  - name: "{{ eks_prefix }}{{ eks_cluster_name }}-worker-ondemand"
     instance_type: t2.small
     ami_id: ami-0440e4f6b9713faf6
     profile_name: "{{ eks_iam_instance_profile_arn }}"
-    security_groups:
-      - sg-0ab2b26df639a4931
-    # volumes:
-    #   - device_name: /dev/sda1
-    #     volume_size: 8
-    #     volume_type: gp2
-    #     delete_on_termination: true
-    # security_groups:
+    security_groups: "{{ eks_vpc_sgs_id_worker }}"
     key_name: marcobraga
     # spot_price: 0.05
     asg_min_size: 1
@@ -63,12 +65,15 @@ eks_worker_scaling_groups:
     availability_zones:
       - "{{ eks_region }}a"
       - "{{ eks_region }}b"
-      # - "{{ eks_region }}c"
-    subnets:
-      - subnet-0555387567fad2215
-      - subnet-08291a0ca42b18cb5
+    subnets: "{{ eks_vpc_subnets_id }}"
+    tags:
+      - Name: "{{ item.name }}"
+      - "{'kubernetes.io/cluster/{{ eks_cluster_name }}':'owned'}"
 
 ##> Ingress
+eks_ingresses_enabled:
+  - aws-alb
+
 eks_ingress_dns: external-dns-test.my-org.com
 
 ##> Python Virtual Env
