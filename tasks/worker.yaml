@@ -12,6 +12,7 @@
     instance_profile_name: "{{ item.profile_name }}"
     instance_monitoring: true
     assign_public_ip: true
+    spot_price: "{{ item.spot_price |d(omit) }}"
     user_data: |
       #!/bin/bash
       set -o xtrace
