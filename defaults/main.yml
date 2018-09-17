@@ -49,17 +49,16 @@ eks_iam_instance_profile_arn: ""
 
 ##> Worker
 eks_worker_scaling_groups:
-  - name: "{{ eks_prefix }}{{ eks_cluster_name }}-worker-ondemand"
-    instance_type: t2.small
+  - name: "{{ eks_prefix }}{{ eks_cluster_name }}-worker-spot"
+    instance_type: t3.small
     ami_id: ami-0440e4f6b9713faf6
     profile_name: "{{ eks_iam_instance_profile_arn }}"
     security_groups: "{{ eks_vpc_sgs_id_worker }}"
-    key_name: marcobraga
-    # spot_price: 0.05
+    key_name: mykey
+    spot_price: 0.02
     asg_min_size: 1
     asg_max_size: 1
     asg_desired: 1
-    #key_name:
     hc_period: 600
     hc_type: EC2
     availability_zones:
@@ -82,7 +81,7 @@ eks_ingress_dns: external-dns-test.my-org.com
 eks_venv_setup: true
 
 ##> Clients: kubectl and IAM Authenticator
-eks_client_setup: true
+eks_clients_install: false
 
 eks_client_kubectl_path: ~/bin/kubectl
 eks_client_kubectl_url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/linux/amd64/kubectl
