@@ -17,6 +17,7 @@
       #!/bin/bash
       set -o xtrace
       /etc/eks/bootstrap.sh {{ eks_cluster_name }}
+      {{ eks_ec2_userdata }}
   with_items: "{{ eks_worker_scaling_groups }}"
 
 - name: Setup Auto Scaling Group

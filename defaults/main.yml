@@ -48,6 +48,7 @@ eks_iam_role_arn_worker: "{{ eks_prefix }}{{ eks_cluster_name }}-role-worker"
 eks_iam_instance_profile_arn: ""
 
 ##> Worker
+eks_ec2_userdata: ""
 eks_worker_scaling_groups:
   - name: "{{ eks_prefix }}{{ eks_cluster_name }}-worker-spot"
     instance_type: t3.small
