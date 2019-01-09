@@ -1,6 +1,8 @@
 ---
-# - name: SG
-# - name: IAM
+
+# TODO
+# - name: creating SG
+# - name: creating IAM
 
 # manual installation
 # - include: cluster.yaml
