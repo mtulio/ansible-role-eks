@@ -1,0 +1,94 @@
+---
+##> Globals
+
+# This prefix will be added to each AWS resources. You can
+# override each one
+eks_prefix: eks-
+eks_default_namespace: default
+eks_deploy: false
+
+# EKS cluster name
+eks_cluster_name: dev
+
+##> AWS globals
+eks_region: us-east-1
+
+##> VPC
+eks_vpc_setup: false
+
+eks_vpc_name: "{{ eks_prefix }}prod-vpc"
+eks_vpc_id: ""
+eks_vpc_ip_block: 10.200.0.0/16
+eks_vpc_subnets:
+  - name: "{{ eks_prefix }}prod-net-eks-public-use1a"
+    cidr: 10.200.0.0/20
+    az: us-east-1a
+  - name: "{{ eks_prefix }}prod-net-eks-public-use1b"
+    cidr: 10.200.4.0/20
+    az: us-east-1b
+
+eks_vpc_subnets_id:
+  - subnet-067fad22155553875
+  - subnet-082942b18cb51a0ca
+
+##> VPC SG
+eks_vpc_sg_setup: true
+eks_vpc_sg_name: "{{ eks_prefix }}{{ eks_cluster_name }}-sg-control-plane"
+eks_vpc_sg_id: ""
+
+eks_vpc_sgs_id_master:
+  - sg-0a9de5ecacd955dbd
+eks_vpc_sgs_id_worker:
+  - sg-2a49362bdf63910ab
+
+##> IAM Role
+eks_iam_role_setup: true
+eks_iam_role_arn_master: "{{ eks_prefix }}{{ eks_cluster_name }}-role-master"
+eks_iam_role_arn_worker: "{{ eks_prefix }}{{ eks_cluster_name }}-role-worker"
+eks_iam_instance_profile_arn: ""
+
+##> Worker
+eks_ec2_userdata: ""
+eks_worker_scaling_groups:
+  - name: "{{ eks_prefix }}{{ eks_cluster_name }}-worker-spot"
+    instance_type: t3.small
+    ami_id: ami-0440e4f6b9713faf6
+    profile_name: "{{ eks_iam_instance_profile_arn }}"
+    security_groups: "{{ eks_vpc_sgs_id_worker }}"
+    key_name: mykey
+    spot_price: 0.02
+    asg_min_size: 1
+    asg_max_size: 1
+    asg_desired: 1
+    hc_period: 600
+    hc_type: EC2
+    availability_zones:
+      - "{{ eks_region }}a"
+      - "{{ eks_region }}b"
+    subnets: "{{ eks_vpc_subnets_id }}"
+    tags:
+      - Name: "{{ item.name }}"
+      - "{'kubernetes.io/cluster/{{ eks_cluster_name }}':'owned'}"
+
+##> Ingress
+eks_ingresses_enabled:
+  - aws-alb
+
+eks_ingress_dns: external-dns-test.my-org.com
+
+##> Python Virtual Env
+# If you are using an older awscli installation, please update in an venv
+# to use aws cli in newer version.
+eks_venv_setup: true
+
+##> Clients: kubectl and IAM Authenticator
+eks_clients_install: false
+
+eks_client_kubectl_path: ~/bin/kubectl
+eks_client_kubectl_url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/linux/amd64/kubectl
+
+eks_client_kubeconfig_file: ~/.kube/{{ eks_prefix }}{{ eks_cluster_name }}.yaml
+eks_client_kubeconfig_workdir: ~/.kube/{{ eks_prefix }}{{ eks_cluster_name }}
+
+eks_client_iamauth_path: ~/bin/aws-iam-authenticator
+eks_client_iamauth_url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/linux/amd64/aws-iam-authenticator

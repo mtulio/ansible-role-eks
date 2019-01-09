@@ -1,0 +1,8 @@
+---
+- set_fact:
+    wk_dir: "{{ eks_client_kubeconfig_workdir }}"
+
+- include: "ingress/{{ item_ingress }}.yml"
+  with_items: "{{ eks_ingresses_enabled }}"
+  loop_control:
+    loop_var: item_ingress

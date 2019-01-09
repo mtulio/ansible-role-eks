@@ -1,0 +1,67 @@
+---
+
+# TODO
+# - name: creating SG
+# - name: creating IAM
+
+# manual installation
+# - include: cluster.yaml
+
+- name: Create EKS cluster
+  local_aws_eks_cluster:
+    name: "{{ eks_cluster_name }}"
+    # version: 1.10
+    role_arn: "{{ eks_iam_role_arn_master }}"
+    wait: true
+    region: "{{ eks_region }}"
+    subnets: "{{ eks_vpc_subnets_id }}"
+    security_groups: "{{ eks_vpc_sgs_id_master }}"
+  register: ret_eks
+
+- debug: var=ret_eks
+
+- name: Get cluster endpoint
+  set_fact:
+    eks_config_endpoint: "{{ ret_eks.endpoint }}"
+    eks_config_cacert: "{{ ret_eks.certificate_authority.data }}"
+
+- name: generate the kubeconfig
+  template:
+    src: kubeconfig.yaml.j2
+    dest: "{{ eks_client_kubeconfig_file }}"
+
+- name: generate the kubeconfig
+  file:
+    state: directory
+    path: "{{ eks_client_kubeconfig_workdir }}"
+
+- name: generate the config map
+  template:
+    src: cm-aws-auth-workers.yaml.j2
+    dest: "{{ eks_client_kubeconfig_workdir }}/cm-aws-auth-workers.yaml"
+
+# - name: Setup IAM role to lookup workers
+#   k8s_raw:
+#     kubeconfig: "{{ eks_client_kubeconfig_file }}"
+#     state: present
+#     definition: "{{ lookup('file', '{{ eks_client_kubeconfig_workdir }}/cm-aws-auth-workers.yaml') | from_yaml }}"
+
+- name: Setup IAM role to lookup workers
+  shell: |
+    KUBECONFIG={{ eks_client_kubeconfig_file }} {{ eks_client_kubectl_path }} apply -f {{ eks_client_kubeconfig_workdir }}/cm-aws-auth-workers.yaml
+  register: ret_setup
+  changed_when: false
+
+- debug: var=ret_setup
+
+# retrieve master service
+# export KUBECONFIG=$KUBECONFIG:~/.kube/config-devel
+# kubectl get svc
+# k8s filter plugins does not work when using external auth command (aws-auth)
+- name: Show master service
+  shell: |
+    KUBECONFIG={{ eks_client_kubeconfig_file }} {{ eks_client_kubectl_path }} get svc
+  register: ret_show
+  changed_when: false
+
+- debug: var=ret_show

@@ -1,0 +1,38 @@
+---
+
+- name: Setup Launch Configuration
+  ec2_lc:
+    name: "{{ item.name }}"
+    image_id: "{{ item.ami_id }}"
+    key_name: "{{ item.key_name |d(omit) }}"
+    security_groups: "{{ item.security_groups }}"
+    instance_type: "{{ item.instance_type }}"
+    volumes: "{{ item.volumes |d([]) }}"
+    vpc_id: "{{ eks_vpc_id }}"
+    instance_profile_name: "{{ item.profile_name }}"
+    instance_monitoring: true
+    assign_public_ip: true
+    spot_price: "{{ item.spot_price |d(omit) }}"
+    user_data: |
+      #!/bin/bash
+      set -o xtrace
+      /etc/eks/bootstrap.sh {{ eks_cluster_name }}
+      {{ eks_ec2_userdata }}
+  with_items: "{{ eks_worker_scaling_groups }}"
+
+- name: Setup Auto Scaling Group
+  ec2_asg:
+    name: "{{ item.name }}"
+    launch_config_name: "{{ item.name }}"
+    health_check_period: "{{ item.hc_period }}"
+    health_check_type: "{{ item.hc_type }}"
+    replace_all_instances: "{{ item.replace |d(omit) }}"
+    min_size: "{{ item.asg_min_size }}"
+    max_size: "{{ item.asg_max_size }}"
+    desired_capacity: "{{ item.asg_desired }}"
+    region: "{{ eks_region }}"
+    availability_zones: "{{ item.availability_zones |d(omit) }}"
+    vpc_zone_identifier: "{{ item.subnets |d(omit) }}"
+    tags: "{{ item.tags |d(omit) }}"
+    wait_for_instances: false
+  with_items: "{{ eks_worker_scaling_groups }}"
