@@ -8,7 +8,7 @@
 # - include: cluster.yaml
 
 - name: Create EKS cluster
-  local_aws_eks_cluster:
+  aws_eks_cluster:
     name: "{{ eks_cluster_name }}"
     # version: 1.10
     role_arn: "{{ eks_iam_role_arn_master }}"
