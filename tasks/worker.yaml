@@ -10,8 +10,8 @@
     volumes: "{{ item.volumes |d([]) }}"
     vpc_id: "{{ eks_vpc_id }}"
     instance_profile_name: "{{ item.profile_name }}"
-    instance_monitoring: true
-    assign_public_ip: true
+    instance_monitoring: "{{ item.assign_public_ip |d(true) }}"
+    assign_public_ip: "{{ item.assign_public_ip |d(false) }}"
     spot_price: "{{ item.spot_price |d(omit) }}"
     user_data: |
       #!/bin/bash
