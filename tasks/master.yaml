@@ -24,16 +24,22 @@
   set_fact:
     eks_config_endpoint: "{{ ret_eks.endpoint }}"
     eks_config_cacert: "{{ ret_eks.certificate_authority.data }}"
+  when:
+    - not(ansible_check_mode)
 
 - name: generate the kubeconfig
   template:
     src: kubeconfig.yaml.j2
     dest: "{{ eks_client_kubeconfig_file }}"
+  when:
+    - not(ansible_check_mode)
 
 - name: generate the kubeconfig
   file:
     state: directory
     path: "{{ eks_client_kubeconfig_workdir }}"
+  when:
+    - not(ansible_check_mode)
 
 - name: generate the config map
   template:
