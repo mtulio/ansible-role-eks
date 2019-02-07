@@ -1,7 +1,8 @@
 ---
 - include: client.yml
   when: eks_clients_install
-
+  become: yes
+  
 - include: master.yaml
 
 - include: worker.yaml
