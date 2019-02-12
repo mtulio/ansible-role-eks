@@ -7,23 +7,11 @@
   shell: "which kubectl || echo 'not found'"
   register: kubectl_path
 
-- name: Create bin directory
-  file:
-    path: /opt/k8s
-    state: directory
-
 - name: Download kubectl
   get_url:
     url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/kubectl
-    dest: /opt/k8s/kubectl
+    dest: ~/bin/kubectl
     mode: 0775
-  when: '"not found" in kubectl_path.stdout'
-
-- name: Create link to kubectl
-  file:
-    src: /opt/k8s/kubectl
-    dest: /usr/local/bin/kubectl
-    state: link
   when: '"not found" in kubectl_path.stdout'
 
 - name: "Get aws iam auth path"
@@ -33,13 +21,6 @@
 - name: Download aws iam auth
   get_url:
     url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
-    dest: /opt/k8s/aws-iam-authenticator
+    dest: ~/bin/aws-iam-authenticator
     mode: 0775
-  when: '"not found" in aws_iam_path.stdout'
-
-- name: Create link to aws iam auth
-  file:
-    src: /opt/k8s/aws-iam-authenticator
-    dest: /usr/local/bin/aws-iam-authenticator
-    state: link
   when: '"not found" in aws_iam_path.stdout'
