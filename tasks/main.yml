@@ -5,5 +5,3 @@
 - include: master.yaml
 
 - include: worker.yaml
-
-- include: ingress.yaml
