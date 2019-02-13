@@ -2,3 +2,25 @@
 # TODO Install clients:
 ## kubectl
 ## aws-iam-authenticator
+
+- name: "Get kubectl path"
+  shell: "which kubectl || echo 'not found'"
+  register: kubectl_path
+
+- name: Download kubectl
+  get_url:
+    url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/kubectl
+    dest: ~/bin/kubectl
+    mode: 0775
+  when: '"not found" in kubectl_path.stdout'
+
+- name: "Get aws iam auth path"
+  shell: "which aws-iam-authenticator || echo 'not found'"
+  register: aws_iam_path
+
+- name: Download aws iam auth
+  get_url:
+    url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
+    dest: ~/bin/aws-iam-authenticator
+    mode: 0775
+  when: '"not found" in aws_iam_path.stdout'
