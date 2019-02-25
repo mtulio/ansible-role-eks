@@ -9,6 +9,8 @@ eks_deploy: false
 
 # EKS cluster name
 eks_cluster_name: dev
+# AWS account it which you'll create the EKS cluster
+eks_aws_account_id:
 
 ##> AWS globals
 eks_region: us-east-1
@@ -46,6 +48,9 @@ eks_iam_role_setup: true
 eks_iam_role_arn_master: "{{ eks_prefix }}{{ eks_cluster_name }}-role-master"
 eks_iam_role_arn_worker: "{{ eks_prefix }}{{ eks_cluster_name }}-role-worker"
 eks_iam_instance_profile_arn: ""
+
+# AWS account users - name.lastname
+eks_iam_users: []
 
 ##> Worker
 eks_ec2_userdata: ""
