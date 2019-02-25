@@ -1,0 +1,12 @@
+---
+
+- name: Create ConfigMap yml from jinja template
+  template:
+    src: users_configMap.j2
+    dest: /tmp/users_configMap.yml
+
+- name: Read definition file and update auth-aws ConfigMap
+  k8s:
+     state: present
+     kubeconfig: "/home/{{ ansible_user_id }}/.kube/config"
+     definition: "{{ lookup('file', '/tmp/users_configMap.yml') | from_yaml }}"
