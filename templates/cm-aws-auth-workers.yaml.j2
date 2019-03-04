@@ -7,9 +7,18 @@ metadata:
 data:
   mapRoles: |
     - rolearn: "{{ eks_iam_role_arn_worker }}"
-      {%- raw %}
+{%- raw %}
       username: system:node:{{EC2PrivateDNSName}}
       groups:
         - system:bootstrappers
         - system:nodes
-      {%endraw%}
+{% endraw %}
+{% if eks_iam_users is defined %}
+  mapUsers: |
+{% for user in eks_iam_users %}
+    - userarn: arn:aws:iam::{{ eks_aws_account_id }}:user/{{ user }}
+      username: {{ user }}
+      groups:
+        - system:masters
+{% endfor %}
+{% endif %}
