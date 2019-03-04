@@ -5,6 +5,3 @@
 - include: master.yaml
 
 - include: worker.yaml
-
-- include: bootstrap.yaml
-  tags: bootstrap
