@@ -40,8 +40,6 @@ eks_vpc_sg_id: ""
 
 eks_vpc_sgs_id_master:
   - sg-0a9de5ecacd955dbd
-eks_vpc_sgs_id_worker:
-  - sg-2a49362bdf63910ab
 
 ##> IAM Role
 eks_iam_role_setup: true
@@ -51,29 +49,6 @@ eks_iam_instance_profile_arn: ""
 
 # AWS account users - name.lastname
 eks_iam_users: []
-
-##> Worker
-eks_ec2_userdata: ""
-eks_worker_scaling_groups:
-  - name: "{{ eks_prefix }}{{ eks_cluster_name }}-worker-spot"
-    instance_type: t3.small
-    ami_id: ami-0440e4f6b9713faf6
-    profile_name: "{{ eks_iam_instance_profile_arn }}"
-    security_groups: "{{ eks_vpc_sgs_id_worker }}"
-    key_name: mykey
-    spot_price: 0.02
-    asg_min_size: 1
-    asg_max_size: 1
-    asg_desired: 1
-    hc_period: 600
-    hc_type: EC2
-    availability_zones:
-      - "{{ eks_region }}a"
-      - "{{ eks_region }}b"
-    subnets: "{{ eks_vpc_subnets_id }}"
-    tags:
-      - Name: "{{ item.name }}"
-      - "{'kubernetes.io/cluster/{{ eks_cluster_name }}':'owned'}"
 
 ##> Ingress
 eks_ingresses_enabled:
