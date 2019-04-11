@@ -3,5 +3,3 @@
   when: eks_clients_install
 
 - include: master.yaml
-
-- include: worker.yaml

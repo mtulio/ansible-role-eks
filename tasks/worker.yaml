@@ -1,3 +1,0 @@
----
-- include: worker/scaling.yaml
-  with_items: "{{ eks_worker_scaling_groups }}"
