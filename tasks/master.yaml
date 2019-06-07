@@ -45,12 +45,14 @@
   template:
     src: cm-aws-auth-workers.yaml.j2
     dest: "{{ eks_client_kubeconfig_workdir }}/cm-aws-auth-workers.yaml"
+  tags: users
 
 - name: Setup IAM role to lookup workers and add users
   k8s:
      state: present
      kubeconfig: "{{ eks_client_kubeconfig_file }}"
      definition: "{{ lookup('file', '{{ eks_client_kubeconfig_workdir }}/cm-aws-auth-workers.yaml') | from_yaml }}"
+  tags: users
 
 - name: Show master service
   shell: |
