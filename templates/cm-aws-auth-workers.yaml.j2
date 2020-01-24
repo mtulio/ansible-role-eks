@@ -5,14 +5,27 @@ metadata:
   name: aws-auth
   namespace: kube-system
 data:
-  mapRoles: |
-    - rolearn: "{{ eks_iam_role_arn_worker }}"
 {%- raw %}
-      username: system:node:{{EC2PrivateDNSName}}
+  mapRoles: |
+{% endraw %}
+    - rolearn: {{ eks_iam_role_arn_worker }}
+      username: system:node:{% raw %}{{EC2PrivateDNSName}}{% endraw %}
+
       groups:
         - system:bootstrappers
         - system:nodes
+
+{% if eks_arn_groups is defined %}
+{% for group in eks_arn_groups %}
+    - rolearn: {{ group.arn }}
+{%- raw %}
+      username: adminuser:{{SessionName}}
 {% endraw %}
+      groups:
+        - {{ group.name }}
+{% endfor %}
+{% endif %}
+
 {% if eks_iam_users is defined %}
   mapUsers: |
 {% for user in eks_iam_users %}
