@@ -54,9 +54,13 @@
      definition: "{{ lookup('file', '{{ eks_client_kubeconfig_workdir }}/cm-aws-auth-workers.yaml') | from_yaml }}"
   tags: users
 
+- name: Find Kubectl path.
+  command: which kubectl
+  register: kubectl_path
+
 - name: Show master service
   shell: |
-    KUBECONFIG={{ eks_client_kubeconfig_file }} {{ eks_client_kubectl_path }} get svc
+    KUBECONFIG={{ eks_client_kubeconfig_file }} {{ kubectl_path.stdout }} get svc
   register: ret_show
   changed_when: false
 
