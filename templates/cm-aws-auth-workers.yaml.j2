@@ -16,13 +16,11 @@ data:
         - system:nodes
 
 {% if eks_arn_groups is defined %}
-{% for group in eks_arn_groups %}
-    - rolearn: {{ group.arn }}
-{%- raw %}
-      username: adminuser:{{SessionName}}
-{% endraw %}
+{% for role in eks_arn_groups %}
+    - rolearn: {{ role.rolearn }}
+      username: {{ role.username }}
       groups:
-        - {{ group.name }}
+        - {{ role.groups }}
 {% endfor %}
 {% endif %}
 

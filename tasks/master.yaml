@@ -40,6 +40,12 @@
     path: "{{ eks_client_kubeconfig_workdir }}"
   when:
     - not(ansible_check_mode)
+  tags: users
+  
+- name: debug config map
+  debug:
+    msg: "{{ lookup('template', './cm-aws-auth-workers.yaml.j2') }}"
+  tags: users
 
 - name: generate the config map
   template:
