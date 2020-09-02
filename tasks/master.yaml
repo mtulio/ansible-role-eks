@@ -1,16 +1,8 @@
 ---
 
-# TODO
-# - name: creating SG
-# - name: creating IAM
-
-# manual installation
-# - include: cluster.yaml
-
 - name: Create EKS cluster
   aws_eks_cluster:
     name: "{{ eks_cluster_name }}"
-    # version: 1.10
     role_arn: "{{ eks_iam_role_arn_master }}"
     wait: true
     region: "{{ eks_region }}"
