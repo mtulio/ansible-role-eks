@@ -1,26 +1,31 @@
 ---
-# TODO Install clients:
-## kubectl
-## aws-iam-authenticator
 
-- name: "Get kubectl path"
+- name: "Check kubectl path"
   shell: "which kubectl || echo 'not found'"
-  register: kubectl_path
+  register: kubectl_path  
 
-- name: Download kubectl
-  get_url:
-    url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/kubectl
-    dest: ~/bin/kubectl
-    mode: 0775
+- name: Check latest kubectl version
+  uri:
+    url: https://storage.googleapis.com/kubernetes-release/release/stable.txt
+    return_content: yes
+  register: kubectl_version
   when: '"not found" in kubectl_path.stdout'
 
+- name: Download latest kubectl
+  uri:
+    url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubectl_version.content | replace('\n', '') }}/bin/linux/amd64/kubectl"
+    return_content: yes
+    dest: /usr/local/bin/kubectl
+    mode: 0755
+  when: '"not found" in kubectl_path.stdout'
+  
 - name: "Get aws iam auth path"
   shell: "which aws-iam-authenticator || echo 'not found'"
   register: aws_iam_path
 
 - name: Download aws iam auth
   get_url:
-    url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
+    url: https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.9/2020-08-04/bin/linux/amd64/aws-iam-authenticator
     dest: ~/bin/aws-iam-authenticator
     mode: 0775
   when: '"not found" in aws_iam_path.stdout'
